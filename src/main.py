@@ -30,7 +30,7 @@ Tmax = 7 # Total time
 PiP = np.array([50.0, 50.0]) # Penalty Cost for each Temperature danger zone
 PiC = np.array([0.0, 10.0, 20.0]) # Continuous cost for each mode
 PiD = np.array([0.0, 30.0, 10.0]) # Discrete cost for each mode when changing to this mode
-A = np.array([-4.0, 4/3, 2.0]) # Heating parameters
+A = np.array([-4.0, 4.0/3.0, 2.0]) # Heating parameters
 
 # Genetic Algorithm Parameters
 pop_size = 1000
@@ -43,11 +43,17 @@ runs = 50 # If you want to run the entire genetic algorith many times, usually t
 # Genetic algorithm run in parallel
 results = []
 tic = time.time()
-for r in range(runs):
-    parallel_runs = dask.delayed(genetic_algorithm)(pop_size, crossover_rate, mutation_rate, generations, tour, Vmax, Vhigh, Vlow, Vmin, PiP, PiC, PiD, Tmax, K, A)
-    results.append(parallel_runs)
-ga_results = dask.compute(*results, scheduler='processes', num_workers=8)
-
-toc = time.time()    
-print_results(ga_results, Vmax, Vhigh, Vlow, Vmin, V0, K, Tmax, PiP, PiC, PiD, A, runs, pop_size, mutation_rate, crossover_rate, tour, generations)
-print('With Threading Total Run Time {} (s)'.format(toc-tic))
+try: 
+    for r in range(runs):
+        parallel_runs = dask.delayed(genetic_algorithm)(pop_size, crossover_rate, mutation_rate, generations, tour, Vmax, Vhigh, Vlow, Vmin, PiP, PiC, PiD, Tmax, K, A)
+        results.append(parallel_runs)
+    ga_results = dask.compute(*results, scheduler='processes', num_workers=8)
+except AttributeError:
+    print('Warning - DASK not available, running single threaded.')
+    ga_results = []
+    for r in range(runs):
+        ga_results.append(genetic_algorithm(pop_size, crossover_rate, mutation_rate, generations, tour, Vmax, Vhigh, Vlow, Vmin, PiP, PiC, PiD, Tmax, K, A))
+finally:
+    toc = time.time()    
+    print_results(ga_results, Vmax, Vhigh, Vlow, Vmin, V0, K, Tmax, PiP, PiC, PiD, A, runs, pop_size, mutation_rate, crossover_rate, tour, generations)
+    print('Total Run Time {} (s)'.format(toc-tic))

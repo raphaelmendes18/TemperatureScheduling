@@ -22,11 +22,8 @@ def init_population(pop_size, crossover_rate, Tmax, K):
 def crossover(pop, pop_size, crossover_rate, tour):
 
     # Generate offspring 
-    for i in range(pop_size, int(pop_size*(1+crossover_rate))):
-        # print(i)
+    for i in range(pop_size, int(pop_size*(1+crossover_rate)), 2):        
         # Pick parents from mating pool of tour best solutions
-        # print(pop.shape)
-        # print(pop[0:int(pop_size*tour)])
         parent_1 = random.choice(pop[0:int(pop_size*tour)])
         # print(parent_1)
         parent_2 = random.choice(pop[0:int(pop_size*tour)])
@@ -34,6 +31,7 @@ def crossover(pop, pop_size, crossover_rate, tour):
         # randomize crossover point
         cp = random.randint(1, pop[i].shape[0]-1)
         pop[i] = np.concatenate([parent_1[0:cp], parent_2[cp:pop[i].shape[0]]])
+        pop[i+1] = np.concatenate([parent_2[0:cp], parent_1[cp:pop[i].shape[0]]])
         # print(pop[i])
     return pop
 def mutation(pop, pop_size, mutation_rate, crossover_rate):
