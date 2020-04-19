@@ -4,8 +4,8 @@
 python3
 
 ```python
-pip install numpy --user
-pip install dask --user
+pip install numpy==1.17.4 
+python -m pip install "dask[delayed]"
 ```
 
 ## Running the code
@@ -21,3 +21,27 @@ python src/main.py
 * Crossover is done by using Single Point Crossover
 
 All methods are in `ga_functions.py` file.
+
+## Changing Parameters
+
+The parameters can be changed in the `main.py` file.
+Default parameters:
+```python
+Vmax, Vhigh, Vlow, Vmin = 5, 4, 0, -1 # Temperature parameters
+V0 = 0 # Initial temperature
+K = 2 # Number of heaters
+Tmax = 7 # Total time
+
+PiP = np.array([50.0, 50.0]) # Penalty Cost for each Temperature danger zone
+PiC = np.array([0.0, 10.0, 20.0]) # Continuous cost for each mode
+PiD = np.array([0.0, 30.0, 10.0]) # Discrete cost for each mode when changing to this mode
+A = np.array([-4.0, 4.0/3.0, 2.0]) # Heating parameters
+
+# Genetic Algorithm Parameters
+pop_size = 1000
+mutation_rate = 0.2
+crossover_rate = 0.6
+tour = 0.2
+generations = 10
+runs = 50 # If you want to run the entire genetic algorith many times, usually this ensures that you have good solutions and that the GA is stable
+```

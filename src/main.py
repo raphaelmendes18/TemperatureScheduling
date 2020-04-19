@@ -38,7 +38,7 @@ mutation_rate = 0.2
 crossover_rate = 0.6
 tour = 0.2
 generations = 10
-runs = 50 # If you want to run the entire genetic algorith many times, usually this ensures that you have good solutions and that the GA is stable
+runs = 50 # If you want to run the entire genetic algorithm many times, usually this ensures that you have good solutions and that the GA is stable
 
 # Genetic algorithm run in parallel
 results = []
