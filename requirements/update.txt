@@ -1,0 +1,79 @@
+%% The scenario 
+%---------------------------------------------------------------------------------------------------------------------%
+% Suppose we need to keep the temperature inside an office between Vmin = 17 [°C] and Vmax = 23 [°C] for Tmax = 7 hours, 
+% and the initial temperature (V0) inside that office is 18 [°C]. The allwable zone consists of 3 zones.
+% Safe zone is between  Vlow = 18 [°C] and Vhigh = 18 [°C] and there are 2 penalty zones when the safe zone is exceeded. 
+% The first penalty zone is between Vmin = 17 [°C] and Vlow = 18 [°C] 
+% and the second penalty zone is between Vhigh = 22 [°C] and Vmax = 23 [°C].
+% (we can reduce this problem by using simpler numbers, i.e. Vmin=-1 , Vlow=0 , Vhigh=4 and Vmax=5) 
+% We have two heaters, i.e. K = 2, at our disposal: gas (mode 1) and electric (mode 2). 
+% Their parameters are A(mode 1) = 4/3 [°C/h], A(mode 2) = 2 [°C/h], and A(mode 0) = -4 [°C/h]
+% it takes 3 hours for the office to reach the maximum allowable temperature using the gas heater (mode 1), 
+% but just 2 hours using the electric one (mode 2). 
+% It takes 1 hour for the office to cool from 22 [°C] to 18 [°C], when both heaters are off (mode 0).
+% The running costs come in 3 flavours. The Discrete cost, i.e. PiD(mode i), and it is paid every time the heater is switched On. 
+% PiD(mode 1) = 30 [$] and PiD(mode 2) = 10 [$].
+% The Continuous cost, i.e. PiC(mode i), and is paid for staying in that mode. 
+% PiC(mode 1) = 10 [$/h] and PiC(mode 2) = 20 [$/h]. 
+% The penalty cost, i.e. PiP(mode i), and it is paid for being in the penalty zone. 
+% PiP(mode 1) = PiP(mode 2) = 50 [$/h].
+%---------------------------------------------------------------------------------------------------------------------%
+
+%% The aim
+%---------------------------------------------------------------------------------------------------------------------%
+% Through Genatic Algorithms (GA), find the optimal schedule (alpha) with the minimum cost per time unit that keeps the temperature within 
+% allwable temperature at all times for a given time horizon. 
+%---------------------------------------------------------------------------------------------------------------------%
+
+%% Special notes
+%---------------------------------------------------------------------------------------------------------------------%
+% mode i = mi
+% alpha = <(m0,t0),(m1,t1),(m2,t2),(m3,t3),...,(mi-1,ti-1),(mi,ti)>
+% mi NOT equal m(i-1)
+% run(alpha) = <V0, V1,V2,V3,...,Vi-1,Vi=V0>
+% Vmin <= V(i) <= Vmax
+% V(t0) = V(0) = V0
+% V(i) not equal V(i+1), either greater or lower.
+% V(i)= V(i-1)+(A(m i)*[((sum(from i=1 to t(i)) ti))-(sum(from i=1 to t(i-1)) ti))]
+% Vmin <= V(i) <= Vmax
+%
+% 0 < ti <= Tmax
+% sum(ti) = Tmax
+% V(i) = V(i-1)+A(m i)*((sum(from i=1 to i) ti)-(sum(from i=1 to i-1) ti))
+% V(t) = V(i-1)+A(m i)*(t-(sum(from i=1 to t(i-1)) ti))
+% t = (V(i-1)/A(m i))-t(i-1)
+%
+% cost(alpha)= sum(PiD(mi))+sum(PiC(mi)*Ti)+integral(from 0 to Tmax) (P(V(t))) dt.
+% P(v(t)) = V(t)-Vhigh    if Vhigh >= V(t) < Vmax            Penalty zone
+% P(v(t)) = 0             if Vhigh <= V(t) <=  Vlow          Safe zone
+% P(v(t)) = Vlow-V(t)     if Vlow >  V(t) <= Vmin            Penalty zone
+% PiD(m0) = PiC(m0) = 0
+% 
+% Optimal schedule can be assumed to reach value Vlow = 0 at the end.
+% Optimal schedule has to:
+% define the opt(v(t))
+% returns the minimum cost
+% covers Tmax
+% reached Vlow=0 at the end 
+% has to be in the shape of alpha = <(m1,t1),(m2,t2),(m3,t3),...,(mi,ti)>, where m(i) not equal m(i+1)
+%---------------------------------------------------------------------------------------------------------------------%
+
+%% Define units
+%---------------------------------------------------------------------------------------------------------------------%
+Vmax = 5;            % The highest temperature we can reach                       [°C]
+Vhigh = 4;           % The highest temperature we can reach                       [°C]
+Vlow = 0;            % The highest temperature we can reach                       [°C]
+Vmin = -1;           % The lowest temperature we can reach                        [°C]
+V0 = 0;              % Inetial temperature at time = 0
+K = 2;               % Number of heaters 
+Tmax = 7;            % Total time                                                 [h]
+PiP = [50 50];       % Penalty cost                                               [$/h]
+PiC = [10 20];       % Continuous cost                                            [$/h]
+PiD = [30 10];       % Discrete cost                                              [$]
+A = [4/3 2];         % Heating parameters for mode 1,2                            [°C/h]
+A0 = -4;             % Cooling parameters for mode 0, when the heaters are off    [°C/h]
+%---------------------------------------------------------------------------------------------------------------------%
+
+
+
+
